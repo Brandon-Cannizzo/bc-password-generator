@@ -56,6 +56,7 @@ def generate_password(min_length, max_length, upper, nums, spec):
     
     return scrambled
 
+# Disable button if there are not options selected from the checkboxes
 is_disabled = not (lowercase or uppercase or numbers or specials)
 
 st.write("**Select at least one option and then click the button below!**")
