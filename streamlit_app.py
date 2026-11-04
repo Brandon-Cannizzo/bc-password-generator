@@ -1,10 +1,11 @@
 import streamlit as st
 import random
+import secrets
 import string
 
 # Create slider and checkboxes for user decision
 length_range = st.slider("Choose the length range for your password:", 4, 24, (8,16))
-lowercase = st.checkbox("Include lowercase letters?", value=True, disabled=True, help="Lower case letters are required by default")
+lowercase = st.checkbox("Include lowercase letters?")
 uppercase = st.checkbox("Include uppercase letters?")
 numbers = st.checkbox("Include numbers?")
 specials = st.checkbox("Include special characters? (!,@,#,etc.)")
@@ -22,7 +23,7 @@ def generate_password(min_length, max_length, upper, nums, spec):
     if min_length==max_length:
         leng=min_length 
     else:
-        leng = random.randrange(min_length, max_length+1)
+        leng = min_length + secrets.randbelow(max_length+1 - min_length)
     
     # Set our character lists
     lowerchars = string.ascii_lowercase
@@ -32,21 +33,21 @@ def generate_password(min_length, max_length, upper, nums, spec):
     char_options = [string.ascii_lowercase]
 
     # Add one of each selected character to password
-    pw+=lowerchars[random.randrange(0,len(lowerchars))]
+    pw+=lowerchars[secrets.randbelow(len(lowerchars))]
     if upper:
-        pw+=upperchars[random.randrange(0,len(upperchars))]
+        pw+=upperchars[secrets.randbelow(len(upperchars))]
         char_options.append(upperchars)
     if nums:
-        pw+=numchars[random.randrange(0,len(numchars))]
+        pw+=numchars[secrets.randbelow(len(numchars))]
         char_options.append(numchars)
     if spec:
-        pw+=specchars[random.randrange(0,len(specchars))]
+        pw+=specchars[secrets.randbelow(len(specchars))]
         char_options.append(specchars)
 
     # Add the remaining characters (if any) to the list randomly
     for i in range(len(pw),leng):
-        choice = random.choice(char_options)
-        pw+=choice[random.randrange(0,len(choice))]
+        choice = secrets.choice(char_options)
+        pw+=choice[secrets.randbelow(len(choice))]
 
     # Scramble password
     pw_list = list(pw)
@@ -55,7 +56,10 @@ def generate_password(min_length, max_length, upper, nums, spec):
     
     return scrambled
 
-if st.button("Generate your password"):
+is_disabled = not (lowercase or uppercase or numbers or specials)
+
+st.write("**Select at least one option and then click the button below!**")
+if st.button("Generate your password", disabled=is_disabled):
     final_password = generate_password(length_range[0],length_range[1],uppercase,numbers,specials)
     st.write("Password:")
     st.text(final_password)
